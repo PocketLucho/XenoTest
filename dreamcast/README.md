@@ -40,17 +40,22 @@ Build the generated shards for SH-4 with, for example,
 | Output | SH-4 code size |
 |---|---|
 | PC output, no cycle timing | 5.45 MB |
-| `--target dc` | 3.34 MB |
-| `--target dc` + MMU-mapped RAM | 2.03 MB |
+| `--target dc` | 2.12 MB |
+| `--target dc` + MMU-mapped RAM | 1.04 MB |
 
 SH-4 instructions per MIPS instruction on synthetic PS1-style workloads go from
 9-10 (PC output) to 3.3-5.2 (`--target dc` + MMU). Interrupts are polled only on
 backward branches (loops), which cut the poll sites in the main EXE from 17,771
 to 2,181. Set `PSXRECOMP_DC_IRQ_ALL_BRANCHES=1` to keep every poll.
 
+The recompiler no longer splits functions at "branches" decoded from data
+sections. Those had added 792 fake entry points and emitted the same bytes up to
+24 times; with the fix only 15 splits remain and the generated code is about
+half the size. The PC output does not change.
+
 ## Next steps
 
-1. Stop splitting functions at internal branch targets.
+1. Fold the remaining split entries and alias hosts into one body.
 2. Drop unreachable resume switches.
 3. Minimal KallistiOS runtime: dispatch, BIOS HLE, CD, VBlank, pad, VMU.
 4. GPU command translation to PowerVR2; SPU to AICA; FMV.
