@@ -42,11 +42,11 @@ Build the generated shards for SH-4 with, for example,
 | Output | SH-4 code size |
 |---|---|
 | PC output, no cycle timing | 5.45 MB |
-| `--target dc` | 2.12 MB |
-| `--target dc` + MMU-mapped RAM | 1.04 MB |
+| `--target dc` | 1.69 MB |
+| `--target dc` + MMU-mapped RAM | 0.65 MB |
 
 SH-4 instructions per MIPS instruction on synthetic PS1-style workloads go from
-9-10 (PC output) to 3.3-5.2 (`--target dc` + MMU). Interrupts are polled only on
+9-10 (PC output) to 3.1-4.9 (`--target dc` + MMU). Interrupts are polled only on
 backward branches (loops), which cut the poll sites in the main EXE from 17,771
 to 2,181. Set `PSXRECOMP_DC_IRQ_ALL_BRANCHES=1` to keep every poll.
 
@@ -54,6 +54,11 @@ The recompiler no longer splits functions at "branches" decoded from data
 sections. Those had added 792 fake entry points and emitted the same bytes up to
 24 times; with the fix only 15 splits remain and the generated code is about
 half the size. The PC output does not change.
+
+Functions no longer carry the savestate resume switch, and only call returns are
+resumable entry points (18,505 switch cases down to 2,983). The DC runtime must
+therefore service interrupts in place; `PSXRECOMP_DC_RESUME_ALL_LEADERS=1` keeps
+every block resumable.
 
 ## Next steps
 
