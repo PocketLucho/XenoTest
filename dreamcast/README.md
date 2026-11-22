@@ -60,12 +60,35 @@ resumable entry points (18,505 switch cases down to 2,983). The DC runtime must
 therefore service interrupts in place; `PSXRECOMP_DC_RESUME_ALL_LEADERS=1` keeps
 every block resumable.
 
+## Overlays
+
+`dreamcast/build_overlays.py` builds the 24 Disc 1 overlays for `--target dc`
+from your own disc and writes everything into a private work directory
+(do not commit it):
+
+```sh
+python3 dreamcast/build_overlays.py --disc path/to/disc1.cue --work build-dc/overlays \
+    --psxrecomp psxrecomp --allow-patched
+```
+
+It extracts each image (checking its SHA-256), compiles it with
+`psxrecomp-game --overlay --target dc`, renames its dispatcher, hides its other
+symbols with `objcopy` and writes `dc_overlay_registry.c`. Link
+`build-dc/overlays/obj/*.o` and the registry with the main EXE and
+`psxrecomp/runtime/dc`; at run time the runtime picks the overlay that is in RAM
+(`runtime/dc/dc_overlay.c`).
+
+Patched discs (fan translations) are supported: the script reads the disc's file
+table to find files a patch moved. With `--allow-patched` it also builds
+overlays the patch changed, when the catalog's function starts still line up
+with the code (the patch only changed text or data). Those are reported as
+unauthenticated.
+
 ## Next steps
 
 1. Fold the remaining split entries and alias hosts into one body.
 2. Drop unreachable resume switches.
 3. Runtime: a first version is in `psxrecomp/runtime/dc`. Under qemu-sh4 the
-   main EXE boots, reads the disc and jumps into its first overlay. Next:
-   compile the overlays for `--target dc`, then GTE, GPU, a KallistiOS
-   platform layer, pad and VMU.
+   main EXE boots, reads the disc and runs its overlays. Next: GTE, GPU, a
+   KallistiOS platform layer, pad and VMU.
 4. GPU command translation to PowerVR2; SPU to AICA; FMV.
