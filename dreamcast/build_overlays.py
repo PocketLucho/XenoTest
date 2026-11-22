@@ -183,9 +183,10 @@ def build_one(idx, img, a):
     tu = d / "ov.c"
     tu.write_text(f'#include "psx_xg_render_auth_hook_types.h"\n#define psx_dispatch_game_compiled {sym}\n'
                   f'#include "{full}"\n#include "{gen / (stem + ".psx_dispatch.c")}"\n')
-    obj, out = d / "ov.o", a.work / "obj" / f"ov_{idx:02d}.o"
-    run([a.cc, *CFLAGS, f"-I{a.psxrecomp}/runtime/include", f"-I{gen}", "-c", str(tu), "-o", str(obj)])
-    run([a.objcopy, f"--keep-global-symbol={sym}", str(obj), str(out)])
+    obj, out = d / f"ov.{a.objdir}.o", a.work / a.objdir / f"ov_{idx:02d}.o"
+    run([a.cc, *a.cflags, f"-I{a.psxrecomp}/runtime/include", f"-I{gen}", "-c", str(tu), "-o", str(obj)])
+    # sh-elf (KallistiOS) prefixes C symbols with "_"; sh4-linux does not
+    run([a.objcopy, f"--keep-global-symbol={sym}", f"--keep-global-symbol=_{sym}", str(obj), str(out)])
     rng = code_ranges(gen / f"{stem}.psx_full.ranges")
     return dict(idx=idx, id=iid, load=load, size=len(raw), sym=sym, samples=samples(raw, load, rng))
 
@@ -198,6 +199,9 @@ def main():
     ap.add_argument("--recomp", type=Path, help="psxrecomp-game binary")
     ap.add_argument("--cc", default="sh4-linux-gnu-gcc")
     ap.add_argument("--objcopy", default="sh4-linux-gnu-objcopy")
+    ap.add_argument("--cflags", help="compiler flags, replacing the defaults "
+                    "(for KallistiOS: \"$KOS_CFLAGS -std=gnu11 -w -g0 -DPSX_NO_DEBUG_TOOLS\")")
+    ap.add_argument("--objdir", default="obj", help="object directory under --work")
     ap.add_argument("--only", help="comma-separated image ids")
     ap.add_argument("--allow-patched", action="store_true",
                     help="also build overlays a patch changed, if their code layout is unchanged")
@@ -205,7 +209,8 @@ def main():
     a = ap.parse_args()
     a.work, a.disc, a.psxrecomp = a.work.resolve(), a.disc.resolve(), a.psxrecomp.resolve()
     a.recomp = (a.recomp or a.psxrecomp / "recompiler/build/psxrecomp-game").resolve()
-    (a.work / "obj").mkdir(parents=True, exist_ok=True)
+    a.cflags = a.cflags.split() if a.cflags else CFLAGS
+    (a.work / a.objdir).mkdir(parents=True, exist_ok=True)
     plan = json.loads(run([sys.executable, "-I", str(ROOT / "tools/extract_disc_overlays.py"),
                            "--list-json"], cwd=ROOT).stdout)
     a.patched = locate(a)
@@ -226,10 +231,10 @@ def main():
         s = ", ".join(f"{{0x{x:08X}u, 0x{w:08X}u}}" for x, w in r["samples"])
         lines.append(f'  {{"{r["id"]}", 0x{r["load"]:08X}u, 0x{r["size"]:X}u, {len(r["samples"])}, {{{s}}}, {r["sym"]}}},')
     lines += ["};", f"const int g_dc_overlay_count = {len(res)};", ""]
-    (a.work / "dc_overlay_registry.c").write_text("\n".join(lines))
+    (a.work / ("dc_overlay_registry.c" if a.objdir == "obj" else f"dc_overlay_registry.{a.objdir}.c")).write_text("\n".join(lines))
     for r in res:
         print(f"{r['id']:45s} {r['load']:08X} +{r['size']:X}")
-    print(f"{len(res)} overlays -> {a.work}/obj, registry {a.work}/dc_overlay_registry.c")
+    print(f"{len(res)} overlays -> {a.work}/{a.objdir}")
 
 
 if __name__ == "__main__":

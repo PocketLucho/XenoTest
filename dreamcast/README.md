@@ -106,6 +106,33 @@ between two pad reads. With that, dialogue advances with Cross and a new game
 reaches the first Gear battle.
 Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc`).
 
+## Dreamcast build (KallistiOS)
+
+Not run yet: it compiles and links, but nobody has booted it on an emulator
+or a console so far.
+
+1. Toolchain: KallistiOS's `utils/kos-chain` (sh-elf gcc 15.2, newlib 4.6),
+   then build KallistiOS. No ARM toolchain needed: KOS ships a prebuilt sound
+   driver.
+2. Main EXE code and runtime with `kos-cc` (`-DPSX_NO_DEBUG_TOOLS`,
+   `-Wno-error=implicit-function-declaration` for GCC 14+).
+3. Overlays: `build_overlays.py ... --cc sh-elf-gcc --objcopy sh-elf-objcopy
+   --objdir objkos --cflags "$KOS_CFLAGS -std=gnu11 -w -g0
+   -Wno-error=implicit-function-declaration -DPSX_NO_DEBUG_TOOLS"`.
+4. `link_kos.py` links `xg_dc.elf` and one file per overlay. All compiled
+   overlays are about 12 MB, more than the console's 16 MB allows next to
+   everything else, so they are loaded on demand into code slots: overlays
+   that the game loads at the same PS1 address share a slot. With disc 1
+   that is 22 overlays in 9 slots (5 MB); the whole program takes 10.7 MB.
+5. `makeip` and `scramble` from KOS give `IP.BIN` and `1ST_READ.BIN`.
+6. `make_gdi.py` writes a GD-ROM image (.gdi) for emulators and optical-drive
+   emulators, with your EXE and raw disc image inside. It contains your copy
+   of the game: keep it to yourself.
+
+Controls: A = Cross, B = Circle, X = Square, Y = Triangle, triggers = L1/R1.
+Video is a first version: the PS1 display area copied into a 640x480
+framebuffer each VBlank (no PowerVR yet, no movies).
+
 ## Next steps
 
 1. Fold the remaining split entries and alias hosts into one body.
