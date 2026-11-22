@@ -100,6 +100,10 @@ Controller under qemu: the runtime fills the BIOS pad buffers from a script.
 The title menu only accepts input once it is on screen, so leave time between
 presses, for example Cross to open the menu, Up to select "Nuevo"/"New Game",
 Cross to start: `DC_PAD="4500-4530:4000,5600-5630:0010,6200-6230:4000"`.
+In 3D scenes a game frame takes many VBlanks under qemu, so hold buttons
+longer there (about 400 VBlanks, e.g. `53000-53400:4000`) or the press falls
+between two pad reads. With that, dialogue advances with Cross and a new game
+reaches the first Gear battle.
 Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc`).
 
 ## Next steps
