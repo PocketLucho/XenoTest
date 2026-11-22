@@ -1,7 +1,7 @@
 [submodule "psxrecomp"]
 	path = psxrecomp
-	url = https://github.com/OpokXeno/psxrecomp.git
-	branch = master
+	url = https://github.com/PocketLucho/psxrecomp.git
+	branch = dc-target
 [submodule "recomp-ui"]
 	path = recomp-ui
 	url = https://github.com/OpokXeno/recomp-ui.git

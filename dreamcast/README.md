@@ -7,9 +7,11 @@ You still need your own Xenogears disc: no game code or data is stored here.
 
 ## psxrecomp `--target dc`
 
-`patches/psxrecomp-0001-dc-target.patch` adds an experimental output mode to the
-recompiler (made against psxrecomp `65b1b4c`, the commit this repo pins). It
-rewrites every generated translation unit for a small 32-bit host:
+The `psxrecomp` submodule now points at the
+[PocketLucho/psxrecomp](https://github.com/PocketLucho/psxrecomp) fork, branch
+`dc-target`, which adds an experimental output mode to the recompiler on top of
+upstream `65b1b4c`. It rewrites every generated translation unit for a small
+32-bit host:
 
 - direct guest-memory access, with an optional MMU-mapped mode (`-DDC_GUEST_RAM_MMU`);
 - MIPS GPRs and HI/LO kept in C locals, written back only where the guest
@@ -17,11 +19,11 @@ rewrites every generated translation unit for a small 32-bit host:
 - one shared cold interrupt stub per function;
 - PC tooling hooks and per-instruction cycle timing compiled out.
 
-Details and measurements: `psxrecomp/docs/DREAMCAST_TARGET.md` after applying.
+Details and measurements: `psxrecomp/docs/DREAMCAST_TARGET.md`.
 
 ```sh
+git submodule sync psxrecomp
 git submodule update --init psxrecomp
-dreamcast/apply-psxrecomp-patches.sh
 cmake -S psxrecomp/recompiler -B psxrecomp/recompiler/build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build psxrecomp/recompiler/build --target psxrecomp-game
 # game/slus_006.64 = your own disc-1 EXE
