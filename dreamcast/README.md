@@ -84,11 +84,20 @@ overlays the patch changed, when the catalog's function starts still line up
 with the code (the patch only changed text or data). Those are reported as
 unauthenticated.
 
+## Game glue
+
+`dreamcast/xg_dc_game.c` overrides the runtime's `dc_game_init()`. For now it
+skips the opening FMV (no MDEC yet): calls to the movie overlay's scene entry
+return at once after selecting the scene the movie would hand over to, so the
+game goes straight to the field. Build with `-DXG_DC_SKIP_FMV=0` to keep it.
+Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc`).
+
 ## Next steps
 
 1. Fold the remaining split entries and alias hosts into one body.
 2. Drop unreachable resume switches.
 3. Runtime: a first version is in `psxrecomp/runtime/dc`. Under qemu-sh4 the
-   main EXE boots, reads the disc and runs its overlays. Next: GTE, GPU, a
-   KallistiOS platform layer, pad and VMU.
+   main EXE boots, reads the disc, skips the opening FMV and runs the field
+   overlay's frame loop. Next: GTE, GPU, a KallistiOS platform layer, pad
+   and VMU.
 4. GPU command translation to PowerVR2; SPU to AICA; FMV.
