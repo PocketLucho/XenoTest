@@ -97,7 +97,7 @@ Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc
 1. Fold the remaining split entries and alias hosts into one body.
 2. Drop unreachable resume switches.
 3. Runtime: a first version is in `psxrecomp/runtime/dc`. Under qemu-sh4 the
-   main EXE boots, reads the disc, skips the opening FMV and runs the field
-   overlay's frame loop. Next: GTE, GPU, a KallistiOS platform layer, pad
-   and VMU.
+   main EXE boots, reads the disc, skips the opening FMV and shows the title
+   screen through the runtime's GTE and software GPU. Next: pad input, a
+   KallistiOS platform layer, the PowerVR2 renderer and VMU.
 4. GPU command translation to PowerVR2; SPU to AICA; FMV.
