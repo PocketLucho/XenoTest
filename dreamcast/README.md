@@ -108,8 +108,8 @@ Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc
 
 ## Dreamcast build (KallistiOS)
 
-Not run yet: it compiles and links, but nobody has booted it on an emulator
-or a console so far.
+Boots in Flycast (HLE BIOS) up to the dedication text and the title logo.
+Not tried on a console yet.
 
 1. Toolchain: KallistiOS's `utils/kos-chain` (sh-elf gcc 15.2, newlib 4.6),
    then build KallistiOS. No ARM toolchain needed: KOS ships a prebuilt sound
@@ -124,10 +124,15 @@ or a console so far.
    everything else, so they are loaded on demand into code slots: overlays
    that the game loads at the same PS1 address share a slot. With disc 1
    that is 22 overlays in 9 slots (5 MB); the whole program takes 10.7 MB.
-5. `makeip` and `scramble` from KOS give `IP.BIN` and `1ST_READ.BIN`.
+5. `makeip` gives `IP.BIN`; `sh-elf-objcopy -O binary -R .stack xg_dc.elf
+   1ST_READ.BIN` gives the program. Do not `scramble` it: a GD-ROM boots
+   `1ST_READ.BIN` as is (only CD-R self-boot discs are scrambled), and a
+   scrambled one jumps into garbage ("SH4 exception when blocked" in Flycast).
 6. `make_gdi.py` writes a GD-ROM image (.gdi) for emulators and optical-drive
-   emulators, with your EXE and raw disc image inside. It contains your copy
-   of the game: keep it to yourself.
+   emulators, with your EXE and raw disc image inside, in the high-density
+   area (track 3). KallistiOS's `/cd` only mounts the low-density track 1 of
+   a GD-ROM, so the runtime reads track 3's ISO9660 itself. The image
+   contains your copy of the game: keep it to yourself.
 
 Controls: A = Cross, B = Circle, X = Square, Y = Triangle, triggers = L1/R1.
 Video is a first version: the PS1 display area copied into a 640x480

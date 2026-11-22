@@ -8,7 +8,7 @@ own copy of the game, so do not share it.
 Layout: track 1 (small data track), track 2 (short silent audio track) and
 track 3 at LBA 45000 holding an ISO9660 filesystem with the Dreamcast boot
 sector (IP.BIN) and:
-  1ST_READ.BIN   the port (scrambled binary of xg_dc.elf)
+  1ST_READ.BIN   the port (plain binary of xg_dc.elf; GD-ROMs are not scrambled)
   PSX.EXE        the game's main executable (from your disc)
   DISC.BIN       your raw 2352-byte disc 1 image (read by the CD emulation)
   OV/OV_nn.BIN   compiled overlays (from link_kos.py)
