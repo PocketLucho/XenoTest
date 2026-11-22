@@ -64,7 +64,8 @@ every block resumable.
 
 1. Fold the remaining split entries and alias hosts into one body.
 2. Drop unreachable resume switches.
-3. Runtime: a first version is in `psxrecomp/runtime/dc` and boots the main EXE
-   under qemu-sh4 until it reads the disc. Next: disc access, then a
-   KallistiOS platform layer, pad and VMU.
+3. Runtime: a first version is in `psxrecomp/runtime/dc`. Under qemu-sh4 the
+   main EXE boots, reads the disc and jumps into its first overlay. Next:
+   compile the overlays for `--target dc`, then GTE, GPU, a KallistiOS
+   platform layer, pad and VMU.
 4. GPU command translation to PowerVR2; SPU to AICA; FMV.
