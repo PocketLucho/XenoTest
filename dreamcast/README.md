@@ -108,8 +108,12 @@ Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc
 
 ## Dreamcast build (KallistiOS)
 
-Boots in Flycast (HLE BIOS) up to the dedication text and the title logo.
-Not tried on a console yet.
+In Flycast (HLE BIOS) a new game runs through the prologue to Lahan and the
+first Gear battle (Cross to open the title menu, Up for "Nuevo", Cross).
+The title and menus run at full speed; 3D scenes are still slow (a few
+frames per second) since the PS1 GPU is drawn in software on the SH4.
+Not tried on a console yet. The serial console prints a speed report every
+10 s ("[perf]"); building `dc_host_kos.c` with `-DDC_PROFILE` adds PC samples.
 
 1. Toolchain: KallistiOS's `utils/kos-chain` (sh-elf gcc 15.2, newlib 4.6),
    then build KallistiOS. No ARM toolchain needed: KOS ships a prebuilt sound
