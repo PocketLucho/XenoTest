@@ -20,6 +20,10 @@
 #define XG_STR_OPEN         0x801D3538u
 #define XG_STR_PLAY         0x801D37CCu
 #define XG_FIELD_MOVIE_DONE 0x800ADB6Cu
+#define XG_FIELD_MOVIE_BUSY 0x800B00E4u   /* field waits (VSync loop) while non-zero */
+#define XG_FIELD_MOVIE_FRAME 0x800B06A0u  /* last frame reported by the player */
+#define XG_FIELD_MOVIE_LEN  0x800C3A2Eu   /* halfword: frames in this movie */
+#define XG_STR_CLOSE        0x801D43B0u
 
 #ifndef XG_DC_SKIP_FMV
 #define XG_DC_SKIP_FMV 1   /* FMV (MDEC) is not ported yet */
@@ -32,13 +36,17 @@ static void movie_skipped(CPUState* cpu)
     dc_call_guest(cpu, XG_SCENE_SET, dc_read8(XG_NEXT_AFTER_MOVIE), 0, 0, 0);
 }
 
-/* Field movie skipped: mark it finished so the playback driver stops.
- * Known gap: after the new-game opening the field still waits on a black
- * screen; the hand-over from movie to field is not reproduced yet. */
+/* Field movie skipped: mark it finished so the playback driver stops, and
+ * clear the "playing" word that the field's movie routine spins on (the STR
+ * library's end-of-movie callback clears it on a real run). */
 static void field_movie_skipped(CPUState* cpu)
 {
     (void)cpu;
     dc_write32(XG_FIELD_MOVIE_DONE, 1);
+    dc_write32(XG_FIELD_MOVIE_BUSY, 0);
+    /* the field leaves its movie loop once the reported frame reaches the
+     * movie's length */
+    dc_write32(XG_FIELD_MOVIE_FRAME, dc_read16(XG_FIELD_MOVIE_LEN));
 }
 
 void dc_game_init(CPUState* cpu)
@@ -48,4 +56,5 @@ void dc_game_init(CPUState* cpu)
     dc_overlay_skip_fn("movie-overlay", XG_MOVIE_ENTRY, movie_skipped);
     dc_overlay_skip("movie-str-lib-overlay", XG_STR_OPEN);
     dc_overlay_skip_fn("movie-str-lib-overlay", XG_STR_PLAY, field_movie_skipped);
+    dc_overlay_skip("movie-str-lib-overlay", XG_STR_CLOSE);
 }
