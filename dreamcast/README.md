@@ -90,6 +90,16 @@ unauthenticated.
 skips the opening FMV (no MDEC yet): calls to the movie overlay's scene entry
 return at once after selecting the scene the movie would hand over to, so the
 game goes straight to the field. Build with `-DXG_DC_SKIP_FMV=0` to keep it.
+Movies played from the field (the new-game opening among them) go through the
+STR library overlay; its open and playback routines are skipped too and the
+field's "movie finished" word is set. After the new-game opening the field
+still waits on a black screen: the hand-over from movie to field is not
+reproduced yet.
+
+Controller under qemu: the runtime fills the BIOS pad buffers from a script.
+The title menu only accepts input once it is on screen, so leave time between
+presses, for example Cross to open the menu, Up to select "Nuevo"/"New Game",
+Cross to start: `DC_PAD="4500-4530:4000,5600-5630:0010,6200-6230:4000"`.
 Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc`).
 
 ## Next steps
@@ -98,6 +108,7 @@ Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc
 2. Drop unreachable resume switches.
 3. Runtime: a first version is in `psxrecomp/runtime/dc`. Under qemu-sh4 the
    main EXE boots, reads the disc, skips the opening FMV and shows the title
-   screen through the runtime's GTE and software GPU. Next: pad input, a
-   KallistiOS platform layer, the PowerVR2 renderer and VMU.
+   screen through the runtime's GTE and software GPU; with the pad it reaches
+   the title menu and starts a new game. Next: the movie-to-field hand-over,
+   a KallistiOS platform layer, the PowerVR2 renderer and VMU.
 4. GPU command translation to PowerVR2; SPU to AICA; FMV.
