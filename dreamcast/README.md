@@ -110,9 +110,11 @@ Compile it with the runtime (`-Ipsxrecomp/runtime/include -Ipsxrecomp/runtime/dc
 
 In Flycast (HLE BIOS) a new game runs through the prologue to Lahan and the
 first Gear battle (Cross to open the title menu, Up for "Nuevo", Cross).
-The title and menus run at full speed; 3D scenes are still slow (a few
-frames per second) since the PS1 GPU is drawn in software on the SH4.
-Not tried on a console yet. The serial console prints a speed report every
+Polygons and sprites are drawn by the PowerVR (`runtime/dc/dc_gpu_pvr.c`):
+the title and menus run at full speed, and the Gear scenes of the prologue
+reach about 9 to 14 game frames per second in Flycast (2 with the software
+GPU), limited by the SH4 now (game code and GTE). Build the runtime with
+`-DDC_SOFT_GPU` to draw everything in software. Not tried on a console yet. The serial console prints a speed report every
 10 s ("[perf]"); building `dc_host_kos.c` with `-DDC_PROFILE` adds PC samples.
 
 1. Toolchain: KallistiOS's `utils/kos-chain` (sh-elf gcc 15.2, newlib 4.6),
@@ -139,8 +141,8 @@ Not tried on a console yet. The serial console prints a speed report every
    contains your copy of the game: keep it to yourself.
 
 Controls: A = Cross, B = Circle, X = Square, Y = Triangle, triggers = L1/R1.
-Video is a first version: the PS1 display area copied into a 640x480
-framebuffer each VBlank (no PowerVR yet, no movies).
+Video: 640x480 through the PowerVR. Not done yet: movies (MDEC), lines,
+exact subtractive blending.
 
 ## Next steps
 
@@ -149,6 +151,6 @@ framebuffer each VBlank (no PowerVR yet, no movies).
 3. Runtime: a first version is in `psxrecomp/runtime/dc`. Under qemu-sh4 the
    main EXE boots, reads the disc, skips the opening FMV and shows the title
    screen through the runtime's GTE and software GPU; with the pad it reaches
-   the title menu and starts a new game. Next: the movie-to-field hand-over,
-   a KallistiOS platform layer, the PowerVR2 renderer and VMU.
-4. GPU command translation to PowerVR2; SPU to AICA; FMV.
+   the title menu and starts a new game. The KallistiOS build adds the
+   PowerVR renderer. Next: speed (game code, GTE), VMU.
+4. SPU to AICA; FMV.
