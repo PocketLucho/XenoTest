@@ -26,7 +26,7 @@
 #define XG_STR_CLOSE        0x801D43B0u
 
 #ifndef XG_DC_SKIP_FMV
-#define XG_DC_SKIP_FMV 1   /* FMV (MDEC) is not ported yet */
+#define XG_DC_SKIP_FMV 0   /* 1: skip the movies */
 #endif
 
 /* What the movie scene does once its video ends: pick the next scene. The
