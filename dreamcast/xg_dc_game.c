@@ -225,6 +225,15 @@ static void vlc2(CPUState* cpu) { vlc_check(cpu, XG_VLC2, XG_VLC2_SIZE, XG_VLC2_
 static void vlc2(CPUState* cpu) { vlc2_c(cpu); }
 #endif
 
+/* XG_DEBUG_ROOM: the Action Replay code 8004F34C 0000 written every frame,
+   which opens the developers' debug room (scene select) for testing. */
+void dc_game_vblank(void)
+{
+#ifdef XG_DEBUG_ROOM
+    *vh(0x8004F34Cu) = 0;
+#endif
+}
+
 void dc_game_init(CPUState* cpu)
 {
     (void)cpu;
