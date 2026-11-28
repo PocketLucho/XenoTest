@@ -676,3 +676,13 @@
 0x8002FCFC  # verified: resident model-renderer tables at 0x8004FFC8/0x80050068 contain this exact `RenderFlatTexturedQuadAverageDepthCue` handler pointer
 0x8002FF0C  # verified: resident model-renderer tables at 0x8004FFCC/0x8005006C contain this exact `RenderFlatTexturedQuadNearestDepthCue` handler pointer
 0x8003014C  # verified: Ghidra DATA xref at 0x80030588 installs `StepValueTowardTarget` as the per-object update callback; no exact dispatch entry before promotion
+0x8002E22C  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002E240  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002E254  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002E268  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002E660  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002E674  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002EACC  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002EAE0  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x8002EAF4  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
+0x80030750  # dc: model-renderer handler table entry at 0x80050010/0x800500B0 (reached after the first Gear battle)
